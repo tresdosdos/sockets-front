@@ -29,8 +29,18 @@ class App extends React.Component {
         });
     }
 
-    handleClick = () => {
-        socket.emit('text', this.state.text)
+    handleSubmit = (e) => {
+        e.preventDefault();
+
+        if (!this.state.text) {
+            return;
+        }
+
+        socket.emit('text', this.state.text);
+
+        this.setState({
+            text: '',
+        })
     };
 
     handleChange = (e) => {
@@ -48,13 +58,13 @@ class App extends React.Component {
 
         return (
             <div className="content-wrapper">
-                <div className="content">
+                <form className="content">
                     <input value={this.state.text} onChange={this.handleChange}/>
-                    <button onClick={this.handleClick}>отправить</button>
+                    <button type="submit" onClick={this.handleSubmit}>отправить</button>
                     <div>
                         {items}
                     </div>
-                </div>
+                </form>
             </div>
         );
     }
