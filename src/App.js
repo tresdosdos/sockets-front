@@ -1,6 +1,9 @@
 import React from 'react';
 import io from 'socket.io-client';
 import './App.css';
+import {Button, Input, Layout} from "antd";
+
+const { Header, Footer, Sider, Content } = Layout;
 
 const socket = io(
     process.env.NODE_ENV === 'production'
@@ -49,6 +52,14 @@ class App extends React.Component {
         })
     };
 
+    handlePress = (e) => {
+        if (e.keyCode !== 13) {
+            return;
+        }
+
+        this.handleSubmit(e);
+    }
+
     configureItems = () => {
         return this.state.messages.map(msg => (<p key={msg}>{msg}</p>))
     };
@@ -57,15 +68,14 @@ class App extends React.Component {
         const items = this.configureItems();
 
         return (
-            <div className="content-wrapper">
-                <form className="content">
-                    <input value={this.state.text} onChange={this.handleChange}/>
-                    <button type="submit" onClick={this.handleSubmit}>отправить</button>
-                    <div>
-                        {items}
-                    </div>
-                </form>
-            </div>
+            <Layout>
+                <Header>Header</Header>
+                <Content>{items}</Content>
+                <Footer>
+                    <Input value={this.state.text} onKeyDown={this.handlePress} onChange={this.handleChange}/>
+                    <Button type="submit" onClick={this.handleSubmit}>отправить</Button>
+                </Footer>
+            </Layout>
         );
     }
 }
