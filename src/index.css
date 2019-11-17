@@ -12,9 +12,12 @@ code {
     monospace;
 }
 
-
 .ant-layout {
   height: 100vh;
+}
+
+.chat-layout {
+  height: 93vh;
 }
 
 .ant-layout-content {
