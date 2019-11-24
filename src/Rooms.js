@@ -4,7 +4,7 @@ import {Button} from "antd";
 export class Rooms extends React.Component {
     render() {
         return this.props.rooms.map(room => {
-            return (<Button onClick={() => this.props.onClick(room.id)} key={room.id}>{room.name}</Button>);
+            return (<Button className={'room-btn'} onClick={() => this.props.onClick(room.id)} key={room.id}>{room.name}</Button>);
         });
     }
 }

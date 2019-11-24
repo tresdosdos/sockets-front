@@ -26,6 +26,7 @@ class App extends React.Component {
         text: '',
         messages: [],
         rooms: [],
+        typings: [],
         addRoomVal: '',
         screenType: SCREEN_TYPES.login,
         roomId: ''
@@ -97,6 +98,8 @@ class App extends React.Component {
         this.setState({
             text: e.currentTarget.value
         })
+
+        this.socket.emit('room/typing', {id: this.state.roomId});
     };
 
     handlePress = (e) => {
@@ -143,7 +146,6 @@ class App extends React.Component {
 
         this.setState({roomId});
         this.socket.on(`room/${roomId}`, (messages) => {
-            console.log(messages);
             this.setState({messages});
         });
         this.socket.on(`room/${roomId}/joiners`, (message) => {
@@ -151,6 +153,17 @@ class App extends React.Component {
             messages.push(message);
 
             this.setState({messages});
+        });
+        this.socket.on(`room/${roomId}/typing`, (data) => {
+            this.setState({
+                typings: _.uniqBy([...this.state.typings, data], 'user.id')
+            });
+
+            setTimeout(() => {
+                this.setState({
+                    typings: this.state.typings.filter(tp => tp.roomId !== roomId && tp.user.id !== data.user.id),
+                })
+            }, 1000);
         });
         this.socket.emit(`room/join`, {id: roomId});
     };
@@ -180,6 +193,9 @@ class App extends React.Component {
                     <Layout className={'chat-layout'}>
                         <Content>
                             <Chat messages={this.messages} />
+                            {!!this.state.typings.length && (
+                                <span>{this.state.typings.filter(tp => tp.roomId === this.state.roomId).map(tp => tp.user.username).join(', ')} is typing</span>
+                            )}
                         </Content>
                         <Footer>
                             <Input value={this.state.text} onKeyDown={this.handlePress} onChange={this.handleChange}/>
