@@ -10,7 +10,7 @@ export function AuthForm(props) {
             <h2>Username</h2>
             <Input value={username} onChange={e => setName(e.currentTarget.value)} />
             <h2>Password</h2>
-            <Input value={password} onChange={e => setPass(e.currentTarget.value)} />
+            <Input type={'password'} value={password} onChange={e => setPass(e.currentTarget.value)} />
             <Button onClick={() => props.onClick(username, password)}>Submit</Button>
         </div>
     );

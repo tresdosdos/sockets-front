@@ -39,12 +39,6 @@ class App extends React.Component {
             console.log('connected');
         });
 
-        this.socket.on('message', (messages) => {
-            this.setState({
-                messages
-            });
-        });
-
         this.socket.on('rooms', (rooms) => {
             this.setState({
                 rooms,
@@ -144,6 +138,10 @@ class App extends React.Component {
             return;
         }
 
+        this.socket.removeListener(`room/${this.state.roomId}`);
+        this.socket.removeListener(`room/${this.state.roomId}/joiners`);
+        this.socket.removeListener(`room/${this.state.roomId}/message`);
+        this.socket.removeListener(`room/${this.state.roomId}/typing`);
         this.setState({roomId});
         this.socket.on(`room/${roomId}`, (messages) => {
             this.setState({messages});
@@ -153,6 +151,11 @@ class App extends React.Component {
             messages.push(message);
 
             this.setState({messages});
+        });
+        this.socket.on(`room/${roomId}/message`, (messages) => {
+            this.setState({
+                messages
+            });
         });
         this.socket.on(`room/${roomId}/typing`, (data) => {
             this.setState({
@@ -167,10 +170,6 @@ class App extends React.Component {
         });
         this.socket.emit(`room/join`, {id: roomId});
     };
-
-    get messages() {
-        return _.uniq(this.state.messages.filter(msg => msg.roomId === this.state.roomId));
-    }
 
     render() {
         if (this.state.screenType === SCREEN_TYPES.login) {
@@ -192,7 +191,7 @@ class App extends React.Component {
                     </Sider>
                     <Layout className={'chat-layout'}>
                         <Content>
-                            <Chat messages={this.messages} />
+                            <Chat messages={this.state.messages} />
                             {!!this.state.typings.length && (
                                 <span>{this.state.typings.filter(tp => tp.roomId === this.state.roomId).map(tp => tp.user.username).join(', ')} is typing</span>
                             )}
